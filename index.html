@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Dieta</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dieta">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div>
+      <div class="topbar-title" id="topTitle">Dziś</div>
+      <div class="topbar-sub" id="topSub"></div>
+    </div>
+    <button class="icon-btn" id="btnSettings" aria-label="Ustawienia">⚙︎</button>
+  </div>
+</header>
+
+<main id="view"></main>
+
+<nav class="tabbar">
+  <button class="tab is-active" data-tab="today"><span>📅</span>Dziś</button>
+  <button class="tab" data-tab="week"><span>🗓</span>Tydzień</button>
+  <button class="tab" data-tab="shop"><span>🛒</span>Zakupy</button>
+  <button class="tab" data-tab="stats"><span>📈</span>Postęp</button>
+</nav>
+
+<div class="sheet-wrap" id="sheetWrap" hidden>
+  <div class="sheet-bg" data-close></div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
