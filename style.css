@@ -9,6 +9,8 @@
     --line:#e2e8f0; --txt:#111827; --dim:#64748b; --dim2:#94a3b8; --acc-dim:#dcfce7; }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* musi być !important — reguły w rodzaju .sheet-wrap{display:flex} biją atrybut hidden */
+[hidden]{display:none !important}
 html,body{margin:0;padding:0}
 body{
   background:var(--bg); color:var(--txt);
@@ -20,6 +22,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 /* ---------- topbar ---------- */
 .topbar{
   position:sticky; top:0; z-index:30; padding-top:var(--safe-t);
+  background:var(--bg);
   background:color-mix(in srgb,var(--bg) 85%,transparent);
   backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid var(--line);
@@ -177,6 +180,7 @@ textarea{resize:vertical;min-height:78px;line-height:1.45}
 .tabbar{
   position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;
   padding:7px 6px calc(7px + var(--safe-b));
+  background:var(--bg);
   background:color-mix(in srgb,var(--bg) 88%,transparent);
   backdrop-filter:saturate(180%) blur(22px); -webkit-backdrop-filter:saturate(180%) blur(22px);
   border-top:1px solid var(--line);

@@ -199,12 +199,14 @@ function viewStats() {
   const avg = withData.length ? Math.round(withData.reduce((s, x) => s + x.eaten, 0) / withData.length) : 0;
   const full = days.filter(x => x.day.meals.length && x.day.meals.every(m => log[x.ds]?.done?.[m.id])).length;
 
+  // seria: kolejne pełne dni wstecz; dzisiaj jeszcze niedokończone nie przerywa serii
   let streak = 0;
-  for (let i = 0; ; i++) {
+  for (let i = 0; i < 365; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const ds = iso(d), day = dayForDate(d);
     const done = day.meals.length && day.meals.every(m => log[ds]?.done?.[m.id]);
-    if (done) streak++; else if (i > 0 || !log[ds]) break; else break;
+    if (done) streak++;
+    else if (i > 0) break;
   }
 
   const last = weight[weight.length - 1], first = weight[0];
