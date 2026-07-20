@@ -90,12 +90,37 @@ main{padding:16px 16px calc(96px + var(--safe-b)); max-width:720px;margin:0 auto
   margin-top:8px;padding:7px 10px;border-radius:10px;background:var(--card2);
   font-size:13px;color:var(--warn);display:flex;gap:6px
 }
-.meal-actions{display:flex;gap:6px;margin-top:10px}
+.meal-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .mini{
   border:1px solid var(--line);background:var(--card2);border-radius:9px;
   padding:5px 10px;font-size:12px;color:var(--dim);cursor:pointer
 }
 .mini:active{transform:scale(.95)}
+.mini.prim{background:var(--acc-dim);border-color:transparent;color:var(--acc);font-weight:650}
+
+/* ---------- przepis ---------- */
+.rmeta{display:flex;gap:7px;flex-wrap:wrap;font-size:13px;color:var(--dim);margin:-10px 0 18px}
+.rlabel{font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--dim2)}
+.rtext{font-size:14.5px;line-height:1.55;margin-top:5px}
+.rbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+.rsteps{margin:12px 0 0;padding:0;list-style:none;counter-reset:s}
+.rsteps li{
+  counter-increment:s; position:relative; padding:0 0 16px 40px;
+  font-size:14.5px; line-height:1.55
+}
+.rsteps li::before{
+  content:counter(s); position:absolute; left:0; top:-1px;
+  width:26px;height:26px;border-radius:50%;background:var(--acc-dim);color:var(--acc);
+  font-size:12.5px;font-weight:750;display:grid;place-items:center
+}
+.rsteps li:not(:last-child)::after{
+  content:''; position:absolute; left:13px; top:29px; bottom:3px; width:1.5px; background:var(--line)
+}
+.rtip{
+  margin-top:8px;padding:14px 15px;border-radius:14px;
+  background:var(--acc-dim);border:1px solid transparent
+}
+.rtip .rtext{color:var(--txt)}
 
 /* ---------- week ---------- */
 .daycard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}

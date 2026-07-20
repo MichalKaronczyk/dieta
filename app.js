@@ -84,8 +84,9 @@ function viewToday() {
         ${m.note ? `<span class="meal-note">💡 ${esc(m.note)}</span>` : ''}
         ${swap ? `<div class="meal-swap"><span>🔁</span><span>${esc(swap)}</span></div>` : ''}
         <div class="meal-actions">
+          <button class="mini prim" data-recipe="${m.id}">📖 Jak zrobić</button>
           <button class="mini" data-swap="${m.id}">🔁 Zamiennik</button>
-          <button class="mini" data-edit="${m.id}">✏️ Edytuj</button>
+          <button class="mini" data-edit="${m.id}">✏️</button>
         </div>
       </div>
     </div>`;
@@ -147,7 +148,10 @@ function viewWeek() {
               <div class="wmeal-name">${esc(m.name)} <span style="color:var(--dim);font-weight:400;font-size:12.5px">· ${m.kcal} kcal</span></div>
               <div class="wmeal-items">${esc(m.items)}</div>
               ${m.note ? `<span class="meal-note">💡 ${esc(m.note)}</span>` : ''}
-              <div class="meal-actions"><button class="mini" data-edit="${m.id}">✏️ Edytuj</button></div>
+              <div class="meal-actions">
+                <button class="mini prim" data-recipe="${m.id}">📖 Jak zrobić</button>
+                <button class="mini" data-edit="${m.id}">✏️</button>
+              </div>
             </div>
           </div>`).join('')}
         <button class="fab" style="margin:10px 0 14px" data-add="${d.id}">+ Dodaj posiłek</button>
@@ -265,10 +269,47 @@ function findMeal(id) {
   return null;
 }
 
+function sheetRecipe(id) {
+  const found = findMeal(id);
+  if (!found) return;
+  const { meal: m, day } = found;
+  const r = m.recipe || {};
+  const steps = (r.steps || []).filter(Boolean);
+
+  openSheet(`
+    <h2>${esc(m.name)}</h2>
+    <div class="rmeta">
+      <span>${esc(day.name)}</span><span>·</span>
+      <span>${esc(m.slot)}</span><span>·</span>
+      <span>~${m.kcal} kcal</span>
+    </div>
+
+    <div class="rbox">
+      <div class="rlabel">🧾 Składniki</div>
+      <div class="rtext">${esc(m.items)}</div>
+    </div>
+
+    ${steps.length ? `
+      <div class="rlabel" style="margin-top:20px">👨‍🍳 Przygotowanie</div>
+      <ol class="rsteps">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+    ` : `<div class="empty" style="padding:26px 0">Brak opisu przygotowania.<br>Dodaj go przez „✏️".</div>`}
+
+    ${r.tip ? `
+      <div class="rtip">
+        <div class="rlabel" style="color:var(--acc);margin-bottom:5px">💡 Jak zbić kalorie</div>
+        <div class="rtext">${esc(r.tip)}</div>
+      </div>` : ''}
+
+    <button class="btn sec" data-edit="${m.id}">✏️ Edytuj to danie</button>
+    <button class="btn sec" data-close>Zamknij</button>
+  `);
+}
+
 function sheetEditMeal(id, dayId) {
   const found = id ? findMeal(id) : null;
   const m = found ? found.meal : { id: uid(), slot: 'Przekąska', name: '', items: '', kcal: 300, note: '' };
   const targetDay = found ? found.day.id : dayId;
+  const r = m.recipe || {};
 
   openSheet(`
     <h2>${id ? 'Edytuj posiłek' : 'Nowy posiłek'}</h2>
@@ -283,6 +324,10 @@ function sheetEditMeal(id, dayId) {
       <div><label>Kalorie</label><input id="fKcal" type="number" inputmode="numeric" value="${m.kcal || ''}"></div>
       <div><label>Notatka</label><input id="fNote" value="${esc(m.note || '')}" placeholder="np. Gotuj x2"></div>
     </div>
+    <label>Przygotowanie — każdy krok w osobnej linii</label>
+    <textarea id="fSteps" style="min-height:130px" placeholder="Pokrój pomidora w kostkę.&#10;Rozgrzej patelnię i rozprowadź masło.&#10;Wlej roztrzepane jajka…">${esc((r.steps || []).join('\n'))}</textarea>
+    <label>Tip kaloryczny (opcjonalnie)</label>
+    <textarea id="fTip" style="min-height:62px" placeholder="np. Sucha patelnia zamiast oleju to ~90 kcal mniej.">${esc(r.tip || '')}</textarea>
     <button class="btn" data-savemeal="${m.id}" data-dayid="${targetDay}">Zapisz</button>
     ${id ? `<button class="btn danger" data-delmeal="${m.id}">Usuń posiłek</button>` : ''}
     <button class="btn sec" data-close>Anuluj</button>
@@ -360,7 +405,7 @@ function render() {
 
 /* ============ zdarzenia ============ */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-toggle],[data-swap],[data-edit],[data-add],[data-nav],[data-open],[data-shop],[data-shopreset],[data-savemeal],[data-delmeal],[data-saveswap],[data-delswap],[data-savesettings],[data-export],[data-import],[data-resetplan],[data-resetall],[data-weight],[data-close],.tab');
+  const t = ev.target.closest('[data-toggle],[data-recipe],[data-swap],[data-edit],[data-add],[data-nav],[data-open],[data-shop],[data-shopreset],[data-savemeal],[data-delmeal],[data-saveswap],[data-delswap],[data-savesettings],[data-export],[data-import],[data-resetplan],[data-resetall],[data-weight],[data-close],.tab');
   if (!t) return;
   const d = t.dataset;
 
@@ -382,8 +427,9 @@ document.addEventListener('click', ev => {
     else cursor.setDate(cursor.getDate() + Number(d.nav));
     return viewToday();
   }
+  if (d.recipe) return sheetRecipe(d.recipe);
   if (d.swap) return sheetSwap(d.swap);
-  if (d.edit) return sheetEditMeal(d.edit);
+  if (d.edit) return sheetEditMeal(d.edit);   // działa też z otwartego przepisu
   if (d.add) return sheetEditMeal(null, d.add);
 
   /* tydzień */
@@ -398,12 +444,15 @@ document.addEventListener('click', ev => {
     const name = $('#fName').value.trim();
     if (!name) return toast('Podaj nazwę dania');
     const found = findMeal(d.savemeal);
+    const steps = $('#fSteps').value.split('\n').map(s => s.trim()).filter(Boolean);
+    const tip = $('#fTip').value.trim();
     const data = {
       slot: $('#fSlot').value,
       name,
       items: $('#fItems').value.trim(),
       kcal: Number($('#fKcal').value) || 0,
       note: $('#fNote').value.trim(),
+      recipe: (steps.length || tip) ? { steps, tip } : undefined,
     };
     if (found) Object.assign(found.meal, data);
     else dayById(d.dayid).meals.push({ id: d.savemeal, ...data });

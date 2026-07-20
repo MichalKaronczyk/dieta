@@ -1,5 +1,5 @@
 // Zmień wersję po każdej aktualizacji plików, żeby telefon pobrał nową wersję.
-const V = 'dieta-v2';
+const V = 'dieta-v3';
 const ASSETS = ['./', './index.html', './style.css', './data.js', './app.js',
                 './manifest.webmanifest', './icon.png', './icon-192.png'];
 
